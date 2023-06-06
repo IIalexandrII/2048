@@ -38,7 +38,9 @@ class gameModel{
          let room = {
             player1: playerOneToken,
             player2: playerTwoToken,
-            start: null
+            start: null,
+            move: undefined,
+            thisNum:undefined
          };
          let host = this.players.get(playerOneToken);
          host.expects=false;
@@ -73,6 +75,33 @@ class gameModel{
             status:"ok",
             roomTk:roomTk,
             data:startNumbers};
+   }
+   canMove(token, roomTk){
+      let result = {canStep: this.players.get(token).step,
+                    num: this.rooms.get(roomTk).thisNum,
+                    move: this.rooms.get(roomTk).move};
+      return result;
+   }
+   setStep(data){
+      let room = this.rooms.get(data.roomTk);
+      room.thisNum = data.num;
+      room.move = data.move;
+      this.rooms.set(data.roomTk,room);
+
+      let player = this.players.get(data.token);
+      player.step = false;
+      this.players.set(data.token,player);
+
+      let player1 = room.player1, player2 = room.player2;
+      let secondToken;
+      if(data.token===player1){
+         secondToken = player2;
+      }else{
+         secondToken = player1;
+      }
+      player = this.players.get(secondToken);
+      player.step = true;
+      this.players.set(secondToken,player);
    }
 }
 

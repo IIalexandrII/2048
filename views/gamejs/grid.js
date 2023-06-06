@@ -16,7 +16,7 @@ export class Grid{
    addNumber(number){
       let emptyCells = this.cells.filter(cell=>cell.isNull());
       let randIndex = Math.floor(Math.random()*emptyCells.length);
-      emptyCells[randIndex].bindNumber(number);
+      return emptyCells[randIndex].bindNumber(number);
    }
    getNumbersData(){
       let number = [];

@@ -13,9 +13,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 const model = new modelGame.gameModel();
 //-------------
-setInterval(()=>{
-   console.log("players: ", model.players);
-   console.log("rooms: ", model.rooms)},5000);
+// setInterval(()=>{
+//    console.log("players: ", model.players);
+//    console.log("rooms: ", model.rooms)},5000);
 //-------------
 app.set('view engine','pug');
 
@@ -48,6 +48,17 @@ app.get('/api/getGame/:token',(req,res)=>{
    }else{
       res.send(JSON.stringify({status:"no"}))
    }
+});
+app.get('/api/canMove/:token/:roomTk',(req,res)=>{
+   let data = model.canMove(req.params.token, req.params.roomTk);
+   if(data !== 0){
+      res.send(JSON.stringify(data))
+   }else{
+      res.send(JSON.stringify({status:"no"}))
+   }
+});
+app.post('/api/setStep',(req,res)=>{
+   model.setStep(req.body);
 });
 
 app.listen(port,hostname,()=>{console.log("started");

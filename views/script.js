@@ -19,7 +19,8 @@ async function getGame(token){
    if(!host){
       await fetch(`/api/getGame/${token}`).then(resp=>resp.json()).then(data=>startGameData=data);
       if(startGameData.status==="ok"){
-         start(true,startGameData.roomTk,false,startGameData.data)
+         console.log(startGameData);
+         start(true,startGameData.roomTk,false,startGameData.data,token)
          return;
       }else{
          setTimeout(()=>{getGame(token)},1000);
@@ -28,6 +29,11 @@ async function getGame(token){
    return 0;
 }
 async function online(){
+   window.onbeforeunload = async function(){
+      if(typeof(token)!=="undefined"){
+        await this.fetch(`/api/deleteToken/${token}`);
+      }
+    };
    choice.style["display"] = "none";
    main.append(game);
    onlineElem.classList.remove("noView");
@@ -54,7 +60,7 @@ async function createRoom(){
       document.querySelector("div.sendToken").addEventListener("click",createRoom,{once:true});
       return;
    }
-   start(true,roomTk,host);
+   start(true,roomTk,host,null,token);
 }
 window.onload=function(){
    game.classList.add("noView");
@@ -62,8 +68,3 @@ window.onload=function(){
    document.getElementById("sn").addEventListener("click",singl,{once:true});
    document.getElementById("ml").addEventListener("click",online,{once:true});
 }
- window.onbeforeunload = async function(){
-   if(typeof(token)!=="undefined"){
-     await this.fetch(`/api/deleteToken/${token}`);
-   }
- };

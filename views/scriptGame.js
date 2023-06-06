@@ -1,7 +1,7 @@
 import { Grid } from "./gamejs/grid.js";
 import { Number } from "./gamejs/number.js";
 
-var field, grid;
+var field, grid ,gameData={step:false,host:false,token:undefined, roomTk:undefined, newNum:undefined, online:false}, aw = true;
 
 function moveNumbers(columns){
    for (let column of columns){
@@ -80,76 +80,199 @@ function canMoveRight(){
 }
 
 function move(event){
-   switch(event.key){
-      case "ArrowUp":
-         if(!canMoveUp()){
-            window.addEventListener("keydown",move,{once:true});
-            return;
+   if(gameData.online){
+      if(gameData.step){
+         let thisMove;
+         switch(event.key){
+            case "ArrowUp":
+               if(!canMoveUp()){
+                  window.addEventListener("keydown",move,{once:true});
+                  return;
+               }
+               moveUp();
+               thisMove = "up";
+               break;
+            case "ArrowDown":
+               if(!canMoveDown()){
+                  window.addEventListener("keydown",move,{once:true});
+                  return;
+               }
+               moveDown();
+               thisMove = "down";
+               break;
+            case "ArrowLeft":
+               if(!canMoveLeft()){
+                  window.addEventListener("keydown",move,{once:true});
+                  return;
+               }
+               moveLeft();
+               thisMove = "left";
+               break;
+            case "ArrowRight":
+               if(!canMoveRight()){
+                  window.addEventListener("keydown",move,{once:true});
+                  return;
+               }
+               moveRight();
+               thisMove = "right";
+               break;
+            default:
+               window.addEventListener("keydown",move,{once:true});
+               return;
          }
-         moveUp();
-         break;
-      case "ArrowDown":
-         if(!canMoveDown()){
-            window.addEventListener("keydown",move,{once:true});
-            return;
+         gameData.step = false;
+         setTimeout(()=>{
+            let number = new Number(field);
+            let dataNum = grid.addNumber(number);
+            gameData.newNum = dataNum;
+            sendStep(gameData.token, gameData.roomTk, thisMove);
+            if(!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()){
+               alert("упс, ходы кончиличь");
+               return;
+            }
+         },240);
+         if(aw){
+            aw = false;
+            waitStep();
          }
-         moveDown();
-         break;
-      case "ArrowLeft":
-         if(!canMoveLeft()){
-            window.addEventListener("keydown",move,{once:true});
-            return;
-         }
-         moveLeft();
-         break;
-      case "ArrowRight":
-         if(!canMoveRight()){
-            window.addEventListener("keydown",move,{once:true});
-            return;
-         }
-         moveRight();
-         break;
-      default:
-         window.addEventListener("keydown",move,{once:true});
-         return;
-   }
-   setTimeout(()=>{
-      grid.addNumber(new Number(field));
-      window.addEventListener("keydown",move,{once:true});
-      if(!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()){
-         alert("упс, ходы кончиличь");
-         return;
       }
-   },240);
+   }else{
+      switch(event.key){
+         case "ArrowUp":
+            if(!canMoveUp()){
+               window.addEventListener("keydown",move,{once:true});
+               return;
+            }
+            moveUp();
+            break;
+         case "ArrowDown":
+            if(!canMoveDown()){
+               window.addEventListener("keydown",move,{once:true});
+               return;
+            }
+            moveDown();
+            break;
+         case "ArrowLeft":
+            if(!canMoveLeft()){
+               window.addEventListener("keydown",move,{once:true});
+               return;
+            }
+            moveLeft();
+            break;
+         case "ArrowRight":
+            if(!canMoveRight()){
+               window.addEventListener("keydown",move,{once:true});
+               return;
+            }
+            moveRight();
+            break;
+         default:
+            window.addEventListener("keydown",move,{once:true});
+            return;
+      }
+      setTimeout(()=>{
+         grid.addNumber(new Number(field))
+         window.addEventListener("keydown",move,{once:true});
+         if(!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()){
+            alert("упс, ходы кончиличь");
+            return;
+         }
+      },240);
+   }
+}
+async function sendStep(token, roomTk, thisMove){
+   let data = {
+      token:token,
+      roomTk:roomTk,
+      move:thisMove,
+      num:gameData.newNum
+   };
+   await fetch("/api/setStep",{
+      method: 'POST',
+      headers: {
+         'Accept': 'application/json, text/plain, */*',
+         'Content-Type': 'application/json'
+      },
+      body:JSON.stringify(data)
+   })
+}  
+async function waitStep(){
+   console.log("я жду");
+   let num,thisMove;
+   await fetch(`/api/canMove/${gameData.token}/${gameData.roomTk}`)
+               .then(resp=>resp.json())
+               .then(data=>{
+                  console.log("asdasdasdasdasdassd",data)
+                  gameData.step=data.canStep; // false,true
+                  num = data.num;             // {x:,y:,value}
+                  thisMove = data.move;
+               });          
+   if(gameData.step && typeof(num)!=="undefined"){
+      switch(thisMove){
+         case "up":
+            moveUp();
+            break;
+         case "down":
+            moveDown();
+            break;
+         case "left":
+            moveLeft();
+            break;
+         case "right":
+            moveRight();
+            break;
+      }
+      let number = new Number(field);
+      number.setValue(num.value)
+      grid.setCell(num.x, num.y,  number);
+      window.addEventListener("keydown",move,{once:true});
+      aw = true;
+      return;
+   }else{
+      setTimeout(waitStep,200);
+   }
 }
 
-function createGame(dataStart=undefined){
+async function createGame(online,dataStart=undefined){
    field = document.querySelector("div.gameField");
    grid = new Grid(field);
-   if(typeof(dataStart)==="undefined"){
-      console.log("я хост");
-      grid.addNumber(new Number(field));
-      grid.addNumber(new Number(field));
-      let data = grid.getNumbersData();
-      return data;
-   }else{
-      console.log("я друг",dataStart[0].x,dataStart[0].y);
-      let numbers = [new Number(field), new Number(field)];
-      console.log(dataStart[0].x, dataStart[0].y);
-      numbers[0].setValue(dataStart[0].value);
-      numbers[1].setValue(dataStart[1].value);
+   gameData.online = online;
+   if(online){
+      if(gameData.host){
+         console.log("я хост");
+         grid.addNumber(new Number(field));
+         grid.addNumber(new Number(field));
+         let data = grid.getNumbersData();
+         window.addEventListener("keydown",move,{once:true});
+         return data;
+      }else{
+         console.log("я друг",dataStart[0].x,dataStart[0].y);
+         let numbers = [new Number(field), new Number(field)];
+         console.log(dataStart[0].x, dataStart[0].y);
+         numbers[0].setValue(dataStart[0].value);
+         numbers[1].setValue(dataStart[1].value);
 
-      grid.setCell(dataStart[0].x, dataStart[0].y,numbers[0]);
-      grid.setCell(dataStart[1].x, dataStart[1].y,numbers[1]);
+         grid.setCell(dataStart[0].x, dataStart[0].y,numbers[0]);
+         grid.setCell(dataStart[1].x, dataStart[1].y,numbers[1]);
+         waitStep();
+      }
+   }else{
+      grid.addNumber(new Number(field));
+      grid.addNumber(new Number(field));
+      window.addEventListener("keydown",move,{once:true});
    }
 }
-export function start(online=false,roomTk=undefined,host=false,dataStart=null){
+export async function start(online=false,roomTk=undefined,host=false,dataStart=null,token=undefined){
    if(online){
+      gameData.roomTk=roomTk;
+      gameData.token=token;
       if(host){
-         let startD = createGame()
+         gameData.host = host;
+         gameData.step = true;
+         let startD = await createGame(online)
          let data = {fieldData: startD,
                      roomTk: roomTk};
-         fetch('/api/createGame', {
+         await fetch('/api/createGame', {
             method: 'POST',
             headers: {
                'Accept': 'application/json, text/plain, */*',
@@ -159,10 +282,11 @@ export function start(online=false,roomTk=undefined,host=false,dataStart=null){
          });
          window.addEventListener("keydown",move,{once:true});
       }else{
-         createGame(dataStart);
+         await createGame(online,dataStart);
       }
+      
    }else{
-      createGame();
+      createGame(online);
       window.addEventListener("keydown",move,{once:true});
    }
 }

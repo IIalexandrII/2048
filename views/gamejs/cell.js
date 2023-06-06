@@ -14,6 +14,10 @@ export class Cell{
    bindNumber(number){
       number.setCord(this.x,this.y);
       this.bindedNumber = number;
+      return {
+         x: this.x,
+         y: this.y,
+         value: number.value};
    }
    isNull(){
       if(typeof(this.bindedNumber)!=='undefined'){
