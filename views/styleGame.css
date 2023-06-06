@@ -1,0 +1,65 @@
+*{
+   box-sizing: border-box;
+   margin: 0;
+   padding: 0;
+   
+}
+body{
+   margin: auto;
+
+   justify-content: center;
+   align-items: center;
+
+   height: 100vh;
+
+   background-color: rgb(30,30,30);
+}
+.gameField{
+   position: relative;
+   display: grid;
+   grid-template-columns: 15vmin 15vmin 15vmin 15vmin;
+   grid-template-rows: 15vmin 15vmin 15vmin 15vmin;
+   gap: 2vmin;
+}
+.cell{
+   background-color:rgb(45,45,45) ;
+   border-radius: 2vmin;
+}
+.number{
+   --x: 2;
+   --y: 0;
+   --bgColor:240deg;
+
+   position: absolute;
+   left: calc(var(--x)*17vmin);
+   top: calc(var(--y)*17vmin);
+   
+   width: 15vmin;
+   height: 15vmin;
+   
+   border-radius: 2vmin;
+
+   user-select: none;
+
+   background-color: hsl(var(--bgColor),50%,50%);
+   color: aliceblue;
+   
+   display: flex;
+   justify-content: center;
+   align-items: center;
+
+   font-size: 5vmin;
+   font-family: 'Arials', sans-serif, monospace;
+   font-weight: bolder;
+
+   transition: top 0.2s, left 0.2s;
+   animation: create 0.3s;
+}
+@keyframes create{
+   0%{
+      transform: scale(0.1) rotate(360deg);
+   }
+   100%{
+      transform: scale(1) rotate(0deg);
+   }
+}

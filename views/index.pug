@@ -1,0 +1,23 @@
+doctype html
+html(lang="ru")
+   head
+      meta(charset="utf-8")
+      title= 2048
+      link(rel="stylesheet", href="style.css")
+      link(rel="stylesheet", href="styleGame.css")
+      script(src="script.js" type="module")
+   body
+      div 
+         p.title= 2048
+      .main    
+         .choice 
+            button.buttonTypeGame(id="sn")= "Одиночная" 
+            button.buttonTypeGame(id="ml")= "Онлайн" 
+         .online(align="center")
+            span= "Ваш токен"
+            .token
+            span= "Введите токен друга"
+            div 
+               input.inputToken(type="text")
+               .sendToken= "Начать"
+         

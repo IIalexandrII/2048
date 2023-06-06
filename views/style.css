@@ -1,0 +1,105 @@
+.title{
+   font-family: 'Arial', sans-serif;
+   font-size: 16vmin;
+   text-align: center;
+   color: #fff;
+   text-shadow: 2vmin 2vmin 6vmin #2400ff, -2vmin -2vmin 6vmin red;
+   -webkit-text-stroke: 2px #fc78ff;
+   -webkit-text-fill-color: transparent;
+   letter-spacing: 5px;
+   user-select: none;
+}
+.main{
+   width: 100vw;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   margin-top: 2vmin;
+}
+.noView{
+   display: none;
+}
+.choice{
+   display:flex;
+   position: relative;
+   width: 66vmin;
+   height: 66vmin;
+   background-color: hsl(60deg, 90%, 50%);
+   border-radius: 2vmin;
+   justify-content: center;
+   align-items: center;
+}
+.buttonTypeGame{
+   display:flex;
+   background-color: #000;
+   border-radius: 2vmin;
+   color: #fff;
+   width: 25vmin;
+   height: 25vmin;
+   font-size: 4vmin;
+   margin: 3vmin;
+   justify-content: center;
+   align-items: center;
+}
+.buttonTypeGame:hover{
+   background-color: rgba(0,0,0,0.75);
+   border:2px solid #fff
+}
+.online{
+   position: relative;
+   left: -10vmin;
+   border:2px solid rgba(0, 13, 196, 0.418);
+   box-shadow: 2vmin 2vmin 6vmin rgba(36, 0, 255, 0.5), -2vmin -2vmin 6vmin rgba(255, 0, 0, 0.5);
+   border-radius: 2vmin;
+   height: 66vmin;
+   width: 30vmin;
+}
+span{
+   font-family: 'Arial', sans-serif;
+   -webkit-text-stroke: 0.5px rgb(224, 123, 255);
+   -webkit-text-fill-color: rgb(231, 154, 255);
+   font-size: 4vmin;
+   color: yellow;
+}
+.token{
+   color: #ffadad;
+   font-size: 5vmin;
+   margin-top: 2vmin;
+   margin-bottom: 5vmin;
+}
+.inputToken{
+   width: 25vmin;
+   height: 5vmin;
+   
+   border-radius: 2vmin;
+   
+   padding: 1vmin;
+   
+   font-size: 3vmin;
+
+   margin: 2vmin 0;
+}
+.sendToken{
+   display: flex;
+   justify-content: center;
+   align-items: center;
+
+   font-size: 3vmin;
+   color: #fff;
+   width: 16vmin;
+   height: 5vmin;
+
+   border-radius: 2vmin;
+   box-shadow: 1vmin 1vmin 4vmin rgba(36, 0, 255, 0.8), -1vmin -1vmin 4vmin rgba(255, 0, 0, 0.8);
+
+   background: linear-gradient(145deg, rgb(36, 0, 255), rgb(255, 0, 0));
+   user-select: none;
+}
+.sendToken:hover{
+   background: linear-gradient(145deg, rgba(36, 0, 255, 0.8), rgba(255, 0, 0, 0.8));
+   border:2px solid #000;
+}
+.sendToken:active{
+   background: linear-gradient(145deg, rgba(36, 0, 255, 0.4), rgba(255, 0, 0, 0.4));
+   border:2px solid #636363;
+}
