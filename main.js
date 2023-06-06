@@ -13,9 +13,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 const model = new modelGame.gameModel();
 //-------------
-// setInterval(()=>{
-//    console.log("players: ", model.players);
-//    console.log("rooms: ", model.rooms)},5000);
+setInterval(()=>{
+   console.log("players: ", model.players);
+   console.log("rooms: ", model.rooms)},5000);
 //-------------
 app.set('view engine','pug');
 
