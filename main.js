@@ -59,6 +59,7 @@ app.get('/api/canMove/:token/:roomTk',(req,res)=>{
 });
 app.post('/api/setStep',(req,res)=>{
    model.setStep(req.body);
+   res.send({status:"ok"});
 });
 
 app.listen(port,hostname,()=>{console.log("started");

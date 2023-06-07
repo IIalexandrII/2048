@@ -79,7 +79,7 @@ function canMoveRight(){
    return canMove(grid.cellsGroupRowReverse);
 }
 
-function move(event){
+async function move(event){
    if(gameData.online){
       if(gameData.step){
          let thisMove;
@@ -121,19 +121,19 @@ function move(event){
                return;
          }
          gameData.step = false;
-         setTimeout(()=>{
+         //setTimeout(()=>{
             let number = new Number(field);
             let dataNum = grid.addNumber(number);
             gameData.newNum = dataNum;
-            sendStep(gameData.token, gameData.roomTk, thisMove);
+            await sendStep(gameData.token, gameData.roomTk, thisMove);
             if(!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()){
                alert("упс, ходы кончиличь");
                return;
             }
-         },240);
+         //},240);
          if(aw){
             aw = false;
-            waitStep();
+            await waitStep();
          }
       }
    }else{
@@ -229,7 +229,7 @@ async function waitStep(){
       aw = true;
       return;
    }else{
-      setTimeout(waitStep,200);
+      setTimeout(waitStep,1000);
    }
 }
 
