@@ -203,22 +203,31 @@ async function sendStep(token, roomTk, thisMove, maxValue){
    if(state.status==="win"){
       alert("вы победили!!!");
    }
+   if(state.status==="no"){
+      alert("похоже противник сдался");
+   }
 }  
 async function waitStep(){
    console.log("я жду");
-   let num,thisMove;
+   let num,thisMove,status;
    await fetch(`/api/canMove/${gameData.token}/${gameData.roomTk}`)
                .then(resp=>resp.json())
                .then(data=>{
                   gameData.step=data.canStep; // false,true
                   num = data.num;             // {x:,y:,value}
                   thisMove = data.move;
+                  status = data.status;
                   if(data.valueEnemy>=2048){
                      alert("Эх, противник победил, он первый собрал 2048");
                      gameData.step = false;
                      return;
                   }
                });          
+   if(status === "no"){
+      alert("похоже противник сдался");
+      gameData.step = false;
+      return;
+   }
    if(gameData.step && typeof(num)!=="undefined"){
       switch(thisMove){
          case "up":

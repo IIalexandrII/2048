@@ -56,11 +56,14 @@ class gameModel{
       return {status:false};
    }
    createGame(data){
+      if(!this.rooms.has(data.roomTk)){return false;}
       let room = this.rooms.get(data.roomTk);
       room.start = data.fieldData;
       this.rooms.set(data.roomTk,room);
+      return true;
    }
    getGame(token){
+      if(!this.players.has(token)){return 0;}
       let roomTk = undefined;
       for(let [key, value] of this.rooms){
          if(value.player1===token || value.player2===token){
@@ -76,6 +79,7 @@ class gameModel{
             data:startNumbers};
    }
    canMove(token, roomTk){
+      if((!this.rooms.has(roomTk))||(!this.players.has(token))){return 0;}
       let room = this.rooms.get(roomTk);
       let player1 = room.player1, player2 = room.player2;
       let secondToken;
@@ -87,10 +91,13 @@ class gameModel{
       let result = {canStep: this.players.get(token).step,
                     num: this.rooms.get(roomTk).thisNum,
                     move: this.rooms.get(roomTk).move,
-                    valueEnemy:this.players.get(secondToken).value};
+                    valueEnemy:this.players.get(secondToken).value,
+                    status:"ok"
+                  };
       return result;
    }
    setStep(data){
+      if((!this.rooms.has(data.roomTk))||(!this.players.has(data.token))){return 22;}
       let room = this.rooms.get(data.roomTk);
       room.thisNum = data.num;
       room.move = data.move;
