@@ -3,7 +3,8 @@ import { Number } from "./gamejs/number.js";
 
 var field, grid ,gameData={step:false,host:false,token:undefined, roomTk:undefined, newNum:undefined, online:false}, aw = true;
 
-function moveNumbers(columns){
+async function moveNumbers(columns){
+   let promAnum = [];
    for (let column of columns){
       for(let i=1;i<4;i++){
          if(column[i].isNull()){
@@ -19,7 +20,7 @@ function moveNumbers(columns){
          if(typeof(desiredCell)=='undefined'){
             continue;
          }
-         
+         promAnum.push(cellForShear.bindedNumber.waitAnim());
          if(desiredCell.isNull()){
             desiredCell.bindNumber(cellForShear.bindedNumber);
          }else{
@@ -28,28 +29,29 @@ function moveNumbers(columns){
          cellForShear.unbind();
       }
    }
+   await Promise.all(promAnum);
    for(let cell of grid.cells){
       if(cell.hasNumForShear()){
-         cell.sum();
+         await cell.sum();
       }
    }
 }
 
-function moveUp(){
+async function moveUp(){
    let columns = grid.cellsGroupColumn;
-   moveNumbers(columns);
+   await moveNumbers(columns);
 }
-function moveDown(){
+async function moveDown(){
    let columns = grid.cellsGroupColumnReverse;
-   moveNumbers(columns);
+   await moveNumbers(columns);
 }
-function moveLeft(){
+async function moveLeft(){
    let rows = grid.cellsGroupRow;
-   moveNumbers(rows);
+   await moveNumbers(rows);
 }
-function moveRight(){
+async function moveRight(){
    let rows = grid.cellsGroupRowReverse;
-   moveNumbers(rows);
+   await moveNumbers(rows);
 }
 
 function canMoveGr(gr){
@@ -89,7 +91,7 @@ async function move(event){
                   window.addEventListener("keydown",move,{once:true});
                   return;
                }
-               moveUp();
+               await moveUp();
                thisMove = "up";
                break;
             case "ArrowDown":
@@ -97,7 +99,7 @@ async function move(event){
                   window.addEventListener("keydown",move,{once:true});
                   return;
                }
-               moveDown();
+               await moveDown();
                thisMove = "down";
                break;
             case "ArrowLeft":
@@ -105,7 +107,7 @@ async function move(event){
                   window.addEventListener("keydown",move,{once:true});
                   return;
                }
-               moveLeft();
+               await moveLeft();
                thisMove = "left";
                break;
             case "ArrowRight":
@@ -113,7 +115,7 @@ async function move(event){
                   window.addEventListener("keydown",move,{once:true});
                   return;
                }
-               moveRight();
+               await moveRight();
                thisMove = "right";
                break;
             default:
@@ -121,16 +123,14 @@ async function move(event){
                return;
          }
          gameData.step = false;
-         //setTimeout(()=>{
-            let number = new Number(field);
-            let dataNum = grid.addNumber(number);
-            gameData.newNum = dataNum;
-            await sendStep(gameData.token, gameData.roomTk, thisMove);
-            if(!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()){
-               alert("упс, ходы кончиличь");
-               return;
-            }
-         //},240);
+         let number = new Number(field);
+         let dataNum = grid.addNumber(number);
+         gameData.newNum = dataNum;
+         await sendStep(gameData.token, gameData.roomTk, thisMove, grid.getMaxValue());
+         if(!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()){
+            alert("упс, ходы кончиличь");
+            return;
+         }
          if(aw){
             aw = false;
             await waitStep();
@@ -143,58 +143,64 @@ async function move(event){
                window.addEventListener("keydown",move,{once:true});
                return;
             }
-            moveUp();
+            await moveUp();
             break;
          case "ArrowDown":
             if(!canMoveDown()){
                window.addEventListener("keydown",move,{once:true});
                return;
             }
-            moveDown();
+            await moveDown();
             break;
          case "ArrowLeft":
             if(!canMoveLeft()){
                window.addEventListener("keydown",move,{once:true});
                return;
             }
-            moveLeft();
+            await moveLeft();
             break;
          case "ArrowRight":
             if(!canMoveRight()){
                window.addEventListener("keydown",move,{once:true});
                return;
             }
-            moveRight();
+            await moveRight();
             break;
          default:
             window.addEventListener("keydown",move,{once:true});
             return;
       }
-      setTimeout(()=>{
-         grid.addNumber(new Number(field))
-         window.addEventListener("keydown",move,{once:true});
-         if(!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()){
-            alert("упс, ходы кончиличь");
-            return;
-         }
-      },240);
+      grid.addNumber(new Number(field))
+      window.addEventListener("keydown",move,{once:true});
+      console.log(grid.getMaxValue());
+      if(!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()){
+         alert("упс, ходы кончиличь");
+         return;
+      }
    }
 }
-async function sendStep(token, roomTk, thisMove){
-   let data = {
+async function sendStep(token, roomTk, thisMove, maxValue){
+   let dataS = {
       token:token,
       roomTk:roomTk,
       move:thisMove,
-      num:gameData.newNum
+      num:gameData.newNum,
+      maxValue:maxValue
    };
+   let state = 99;
    await fetch("/api/setStep",{
       method: 'POST',
       headers: {
          'Accept': 'application/json, text/plain, */*',
          'Content-Type': 'application/json'
       },
-      body:JSON.stringify(data)
-   })
+      body:JSON.stringify(dataS)
+   }).then(resp=>resp.json())
+   .then(data=>state = data);
+   console.log("status: ",state.status);
+   if(state.status==="win"){
+      alert("вы победили!!!");
+   }
 }  
 async function waitStep(){
    console.log("я жду");
@@ -202,24 +208,28 @@ async function waitStep(){
    await fetch(`/api/canMove/${gameData.token}/${gameData.roomTk}`)
                .then(resp=>resp.json())
                .then(data=>{
-                  console.log("asdasdasdasdasdassd",data)
                   gameData.step=data.canStep; // false,true
                   num = data.num;             // {x:,y:,value}
                   thisMove = data.move;
+                  if(data.valueEnemy>=2048){
+                     alert("Эх, противник победил, он первый собрал 2048");
+                     gameData.step = false;
+                     return;
+                  }
                });          
    if(gameData.step && typeof(num)!=="undefined"){
       switch(thisMove){
          case "up":
-            moveUp();
+            await moveUp();
             break;
          case "down":
-            moveDown();
+            await moveDown();
             break;
          case "left":
-            moveLeft();
+            await moveLeft();
             break;
          case "right":
-            moveRight();
+            await moveRight();
             break;
       }
       let number = new Number(field);
@@ -227,6 +237,9 @@ async function waitStep(){
       grid.setCell(num.x, num.y,  number);
       window.addEventListener("keydown",move,{once:true});
       aw = true;
+      if(!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()){
+         alert("У вашего напарника кончились ходы, вы победили!!!");
+      }
       return;
    }else{
       setTimeout(waitStep,1000);

@@ -43,4 +43,15 @@ export class Grid{
    setCell(x,y,num){
       this.cellsGroupRow[y][x].bindNumber(num);
    }
+   getMaxValue(){
+      let max=0;
+      for(let cell of this.cells){
+         if(!cell.isNull()){
+            if(cell.getData().value > max){
+               max = cell.getData().value;
+            }
+         }
+      }
+      return max;
+   }
 }

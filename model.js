@@ -12,7 +12,7 @@ class gameModel{
       }
       let player = {expects: true,
                     step:false,
-                    value:undefined
+                    value:0
                   };
       this.players.set(token,player);
       return token;
@@ -70,16 +70,24 @@ class gameModel{
       }
       if(typeof(roomTk)==="undefined"){return 0;}
       let startNumbers = this.rooms.get(roomTk).start;
-      console.log("71 model.js: ",startNumbers[0]);
       return{ 
             status:"ok",
             roomTk:roomTk,
             data:startNumbers};
    }
    canMove(token, roomTk){
+      let room = this.rooms.get(roomTk);
+      let player1 = room.player1, player2 = room.player2;
+      let secondToken;
+      if(token===player1){
+         secondToken = player2;
+      }else{
+         secondToken = player1;
+      }
       let result = {canStep: this.players.get(token).step,
                     num: this.rooms.get(roomTk).thisNum,
-                    move: this.rooms.get(roomTk).move};
+                    move: this.rooms.get(roomTk).move,
+                    valueEnemy:this.players.get(secondToken).value};
       return result;
    }
    setStep(data){
@@ -90,6 +98,10 @@ class gameModel{
 
       let player = this.players.get(data.token);
       player.step = false;
+      player.value = data.maxValue;
+      if(data.maxValue>=2048){
+         return 5;
+      }
       this.players.set(data.token,player);
 
       let player1 = room.player1, player2 = room.player2;
@@ -102,6 +114,7 @@ class gameModel{
       player = this.players.get(secondToken);
       player.step = true;
       this.players.set(secondToken,player);
+      return 0;
    }
 }
 

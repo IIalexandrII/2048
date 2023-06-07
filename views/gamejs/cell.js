@@ -51,10 +51,8 @@ export class Cell{
       return false;
    }
    sum(){
-      setTimeout(()=>{
-         this.bindedNumber.setValue(this.bindedNumber.value*2);
-         this.newBindedNumber.num.remove();
-         this.newBindedNumber = undefined;
-      },210);
+      this.bindedNumber.setValue(this.bindedNumber.value*2);
+      this.newBindedNumber.num.remove();
+      this.newBindedNumber = undefined;
    }
 }

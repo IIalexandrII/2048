@@ -22,4 +22,9 @@ export class Number{
               y: this.y, 
               value: this.value}
    }
+   waitAnim(){
+      return new Promise(resolve=>{
+         this.num.addEventListener("transitionend",resolve,{once:true});
+      })
+   }
 }

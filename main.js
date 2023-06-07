@@ -13,9 +13,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 const model = new modelGame.gameModel();
 //-------------
-// setInterval(()=>{
-//    console.log("players: ", model.players);
-//    console.log("rooms: ", model.rooms)},5000);
+setInterval(()=>{
+   console.log("players: ", model.players);
+   console.log("rooms: ", model.rooms)},5000);
 //-------------
 app.set('view engine','pug');
 
@@ -39,6 +39,7 @@ app.get('/api/createRoom/:tkHost/:tkPlayer2',(req,res)=>{
 });
 app.post('/api/createGame',(req,res)=>{
    model.createGame(req.body);
+   res.send({status:"ok"});
 });
 
 app.get('/api/getGame/:token',(req,res)=>{
@@ -58,8 +59,12 @@ app.get('/api/canMove/:token/:roomTk',(req,res)=>{
    }
 });
 app.post('/api/setStep',(req,res)=>{
-   model.setStep(req.body);
-   res.send({status:"ok"});
+   let result = model.setStep(req.body);
+   if (result!==5){
+      res.send(JSON.stringify({status:"ok"}));
+   }else{
+      res.send(JSON.stringify({status:"win"}));
+   }
 });
 
 app.listen(port,hostname,()=>{console.log("started");
