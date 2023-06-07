@@ -198,6 +198,8 @@ async function sendStep(token, roomTk, thisMove, maxValue){
    }).then(resp=>resp.json())
    .then(data=>state = data);
    console.log("status: ",state.status);
+   document.querySelector("div.step").textContent = "Ход соперника";
+   document.querySelector("div.step").style.setProperty('--colorTx',"red");
    if(state.status==="win"){
       alert("вы победили!!!");
    }
@@ -240,6 +242,8 @@ async function waitStep(){
       if(!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()){
          alert("У вашего напарника кончились ходы, вы победили!!!");
       }
+      document.querySelector("div.step").textContent = "Ваш ход";
+      document.querySelector("div.step").style.setProperty('--colorTx',"green");
       return;
    }else{
       setTimeout(waitStep,1000);
@@ -256,6 +260,8 @@ async function createGame(online,dataStart=undefined){
          grid.addNumber(new Number(field));
          grid.addNumber(new Number(field));
          let data = grid.getNumbersData();
+         document.querySelector("div.step").textContent = "Ваш ход";
+         document.querySelector("div.step").style.setProperty('--colorTx',"green");
          window.addEventListener("keydown",move,{once:true});
          return data;
       }else{
@@ -267,6 +273,8 @@ async function createGame(online,dataStart=undefined){
 
          grid.setCell(dataStart[0].x, dataStart[0].y,numbers[0]);
          grid.setCell(dataStart[1].x, dataStart[1].y,numbers[1]);
+         document.querySelector("div.step").textContent = "Ход соперника";
+         document.querySelector("div.step").style.setProperty('--colorTx',"red");
          waitStep();
       }
    }else{

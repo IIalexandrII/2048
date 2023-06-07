@@ -63,3 +63,19 @@ body{
       transform: scale(1) rotate(0deg);
    }
 }
+
+.step{
+   --colorTx:green;
+   display: flex;
+   border-radius: 2vmin;
+ 
+   width: 80%;
+   height: 15%;
+
+   color: var(--colorTx);
+   font-size: 5vmin;
+  
+   justify-content: center;
+   align-items: center;
+   margin-top: 2vmin;
+}
