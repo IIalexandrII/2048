@@ -1,5 +1,6 @@
 import{start} from"./scriptGame.js"
 
+var textRules = "В данной игре вы с напарником ходите по очереди.<br>Условия победы<br>-- На вашем ходу сибирется 2048,<br>-- На ходу соперника закончатся возможности ходить"; 
 var main = document.querySelector("div.main");
 var choice = document.querySelector("div.choice");
 var onlineElem = document.querySelector("div.online");
@@ -8,6 +9,9 @@ var token = undefined;
 var roomTk = undefined;
 var host = false;
 game.classList.add("gameField");
+
+var rules = document.createElement("div");
+rules.classList.add("rules");
 
 function singl(){
    choice.style["display"] = "none";
@@ -36,6 +40,8 @@ async function online(){
     };
    choice.style["display"] = "none";
    main.append(game);
+   main.append(rules);
+   rules.innerHTML = textRules;
    onlineElem.classList.remove("noView");
    await fetch("/api/getToken")
          .then(resp => resp.text())

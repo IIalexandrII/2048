@@ -103,3 +103,18 @@ span{
    background: linear-gradient(145deg, rgba(36, 0, 255, 0.4), rgba(255, 0, 0, 0.4));
    border:2px solid #636363;
 }
+.rules{
+   position: relative;
+   left: 10vmin;
+   border:2px solid rgba(0, 13, 196, 0.418);
+   box-shadow: 2vmin 2vmin 6vmin rgba(36, 0, 255, 0.5), -2vmin -2vmin 6vmin rgba(255, 0, 0, 0.5);
+   border-radius: 2vmin;
+   height: fit-content;
+   width: 35vmin;
+
+   font-size: 2vmin;
+   color: rgb(169, 255, 71);
+   font-family: 'Courier New', Courier, monospace;
+   padding: 5vmin 2vmin;
+   
+}
