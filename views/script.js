@@ -1,6 +1,6 @@
 import{start} from"./scriptGame.js"
 
-var textRules = "В данной игре вы с напарником ходите по очереди.<br>Условия победы<br>-- На вашем ходу сибирется 2048,<br>-- На ходу соперника закончатся возможности ходить"; 
+var textRules = "В данной игре вы с напарником ходите по очереди.<br>Условия победы<br>-- На вашем ходу соберется 2048,<br>-- На ходу соперника закончатся возможности ходить"; 
 var main = document.querySelector("div.main");
 var choice = document.querySelector("div.choice");
 var onlineElem = document.querySelector("div.online");
