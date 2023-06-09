@@ -64,7 +64,6 @@ class gameModel{
    }
    getGame(token){
       if(!this.players.has(token)){return 0;}
-      if(!this.players.get(token).expects){return 0;}
       let roomTk = undefined;
       for(let [key, value] of this.rooms){
          if(value.player1===token || value.player2===token){
